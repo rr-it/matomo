@@ -46,6 +46,7 @@ class ArchiveCronTest extends SystemTestCase
     const NEW_SEGMENT_NAME = 'segmentForToday';
     const ENCODED_SEGMENT = 'pageUrl=@%252F';
     const ENCODED_SEGMENT_NAME = 'segmentWithEncoding';
+    const DATE_NOW = '2024-01-23 00:00:00';
 
     /**
      * @var ManySitesImportedLogs
@@ -116,7 +117,7 @@ class ArchiveCronTest extends SystemTestCase
 
     private static function trackVisitsForToday()
     {
-        $startTime = Date::today()->addHour(12)->getDatetime();
+        $startTime = Date::factory(self::DATE_NOW)->addHour(12)->getDatetime();
 
         $t = Fixture::getTracker(self::$fixture->idSite, $startTime);
         $t->setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148');
@@ -247,6 +248,8 @@ class ArchiveCronTest extends SystemTestCase
             self::undoForceCurlCliMulti();
         }
 
+        Date::$now = strtotime(self::DATE_NOW);
+
         foreach ($this->getApiForTesting() as $testInfo) {
 
             [$api, $params] = $testInfo;
@@ -263,6 +266,8 @@ class ArchiveCronTest extends SystemTestCase
                 var_dump($output);
             }
         }
+
+        Date::$now = null;
     }
 
     /**
